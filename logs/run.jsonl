@@ -81,3 +81,4 @@
 {"type":"received_message","chat_id":7856700423,"text":"What is the population of maharashtra \nAlso give me the source url for your learning","ts":"2026-07-26T15:39:08.751Z"}
 {"type":"final_answer","chat_id":7856700423,"text":"{\"population\":129580000}","ts":"2026-07-26T15:39:12.071Z"}
 {"type":"received_message","chat_id":7856700423,"text":"Log url also","ts":"2026-07-26T15:39:24.105Z"}
+{"type":"final_answer","chat_id":7856700423,"text":"{\"log_url\":\"https://raw.githubusercontent.com/Luta07/tds_p1/main/logs/run.jsonl\"}","ts":"2026-07-26T15:39:27.130Z"}
