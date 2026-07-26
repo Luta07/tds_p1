@@ -183,7 +183,7 @@ truth. Rules you must follow:
       Authorization: `Bearer ${env.GROQ_API_KEY}`,
     },
     body: JSON.stringify({
-      model: "llama-3.3-70b-versatile",
+      model: "llama-3.1-8b-instant",
       temperature: 0,
       messages: [
         { role: "system", content: systemPrompt },
@@ -224,9 +224,9 @@ async function tavilySearch(env, query) {
       body: JSON.stringify({
         api_key: env.TAVILY_API_KEY,
         query: searchQuery,
-        search_depth: "advanced",
+        search_depth: "basic",
         include_answer: true,
-        max_results: 6,
+        max_results: 4,
       }),
     });
 
@@ -242,7 +242,10 @@ async function tavilySearch(env, query) {
       combined += `Quick answer: ${data.answer}\n\n`;
     }
     for (const r of data.results || []) {
-      combined += `Source: ${r.title} (${r.url})\n${r.content}\n\n`;
+      // Truncate each result's content to keep total tokens per request low -
+      // the free Groq tier has a strict daily token budget.
+      const shortContent = (r.content || "").slice(0, 500);
+      combined += `Source: ${r.title} (${r.url})\n${shortContent}\n\n`;
     }
     return combined || "(no search results found)";
   } catch (err) {
