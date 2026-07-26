@@ -34,3 +34,4 @@
 {"type":"final_answer","chat_id":7856700423,"text":"{\"answer\":{\"credible_sources\":[\"scholarly articles\",\"government reports\",\"reputable publishers\",\"academic books\",\"industry research\"]},\"log_url\":\"https://raw.githubusercontent.com/Luta07/tds_p1/main/logs/run.jsonl\"}","ts":"2026-07-26T15:06:09.033Z"}
 {"type":"received_message","chat_id":7856700423,"text":"madd","ts":"2026-07-26T15:06:21.108Z"}
 {"type":"final_answer","chat_id":7856700423,"text":"{\"answer\":{\"organization\":\"Mothers Against Drunk Driving (MADD)\"},\"log_url\":\"https://raw.githubusercontent.com/Luta07/tds_p1/main/logs/run.jsonl\"}","ts":"2026-07-26T15:06:26.737Z"}
+{"type":"received_message","chat_id":7856700423,"text":"Which Indian state has the lowest per capita income according to MOSPI/government data? Reply with ONLY this JSON: {\"state\": \"<name>\"}","ts":"2026-07-26T15:08:13.871Z"}
