@@ -10,3 +10,12 @@ GITHUB_OWNER = "Luta07"
 GITHUB_REPO = "tds_p1"
 GITHUB_BRANCH = "main"
 GITHUB_LOG_PATH = "logs/run.jsonl"
+
+# KV namespace used to remember each Telegram chat's recent messages, so the
+# bot can handle multi-turn conversations (answer the last message using
+# earlier ones as context). Create this with:
+#   npx wrangler kv namespace create CHAT_HISTORY
+# then paste the "id" it prints into the line below.
+[[kv_namespaces]]
+binding = "CHAT_HISTORY"
+id = "baa70d93c33c4ff89177ba9b9c8e85c3"
