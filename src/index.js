@@ -136,48 +136,64 @@ async function logEvent(env, event) {
 
   const apiUrl = `https://api.github.com/repos/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/contents/${env.GITHUB_LOG_PATH}`;
 
-  // 1. Get current file (if it exists) to read its sha + content
-  let sha = undefined;
-  let existingContent = "";
+  const maxAttempts = 4;
 
-  const getRes = await fetch(apiUrl + `?ref=${env.GITHUB_BRANCH || "main"}`, {
-    headers: {
-      Authorization: `Bearer ${env.GITHUB_TOKEN}`,
-      "User-Agent": "tds-telegram-bot",
-      Accept: "application/vnd.github+json",
-    },
-  });
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    // 1. Get current file (if it exists) to read its sha + content
+    let sha = undefined;
+    let existingContent = "";
 
-  if (getRes.status === 200) {
-    const fileData = await getRes.json();
-    sha = fileData.sha;
-    existingContent = decodeBase64(fileData.content.replace(/\n/g, ""));
-  } else if (getRes.status !== 404) {
-    // Some other error - log to console but don't crash the whole request
-    console.log("GitHub GET error", getRes.status, await getRes.text());
-  }
+    const getRes = await fetch(apiUrl + `?ref=${env.GITHUB_BRANCH || "main"}`, {
+      headers: {
+        Authorization: `Bearer ${env.GITHUB_TOKEN}`,
+        "User-Agent": "tds-telegram-bot",
+        Accept: "application/vnd.github+json",
+      },
+    });
 
-  const updatedContent = existingContent + newLine;
+    if (getRes.status === 200) {
+      const fileData = await getRes.json();
+      sha = fileData.sha;
+      existingContent = decodeBase64(fileData.content.replace(/\n/g, ""));
+    } else if (getRes.status !== 404) {
+      console.log("GitHub GET error", getRes.status, await getRes.text());
+    }
 
-  // 2. Push the updated content back
-  const putRes = await fetch(apiUrl, {
-    method: "PUT",
-    headers: {
-      Authorization: `Bearer ${env.GITHUB_TOKEN}`,
-      "User-Agent": "tds-telegram-bot",
-      Accept: "application/vnd.github+json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      message: `log: ${event.type} ${event.ts}`,
-      content: encodeBase64(updatedContent),
-      branch: env.GITHUB_BRANCH || "main",
-      ...(sha ? { sha } : {}),
-    }),
-  });
+    const updatedContent = existingContent + newLine;
 
-  if (!putRes.ok) {
-    console.log("GitHub PUT error", putRes.status, await putRes.text());
+    // 2. Push the updated content back
+    const putRes = await fetch(apiUrl, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${env.GITHUB_TOKEN}`,
+        "User-Agent": "tds-telegram-bot",
+        Accept: "application/vnd.github+json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        message: `log: ${event.type} ${event.ts}`,
+        content: encodeBase64(updatedContent),
+        branch: env.GITHUB_BRANCH || "main",
+        ...(sha ? { sha } : {}),
+      }),
+    });
+
+    if (putRes.ok) {
+      return; // success
+    }
+
+    const bodyText = await putRes.text();
+
+    if (putRes.status === 409 && attempt < maxAttempts) {
+      // Someone else updated the file between our GET and PUT (race condition).
+      // Wait a moment, then loop around and try again with a fresh sha.
+      console.log(`GitHub PUT 409 conflict, retrying (attempt ${attempt})`, bodyText);
+      await new Promise((resolve) => setTimeout(resolve, 300 * attempt));
+      continue;
+    }
+
+    console.log("GitHub PUT error", putRes.status, bodyText);
+    return;
   }
 }
 
