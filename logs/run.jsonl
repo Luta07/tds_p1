@@ -52,3 +52,4 @@
 {"type":"final_answer","chat_id":7856700423,"text":"{\"state\":\"Lakshadweep\"}","ts":"2026-07-26T15:10:14.524Z"}
 {"type":"received_message","chat_id":7856700423,"text":"Which state has the highest rate according to government data? Reply with ONLY this JSON: {\"state\": \"<name>\"}","ts":"2026-07-26T15:10:30.251Z"}
 {"type":"final_answer","chat_id":7856700423,"text":"{\"state\":\"Kerala\"}","ts":"2026-07-26T15:10:38.386Z"}
+{"type":"received_message","chat_id":7856700423,"text":"I want data about Indian rivers.","ts":"2026-07-26T15:10:49.979Z"}
