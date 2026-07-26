@@ -98,15 +98,21 @@ async function saveChatHistory(env, chatId, history) {
 }
 
 // The model is unreliable about outputting the correct log_url (it sometimes
-// invents one from a search result). We NEVER trust the model for this field -
-// we always overwrite it with the real, known-correct log URL.
+// invents one from a search result). We never trust the model for the VALUE
+// of this field - but we also must not ADD a log_url key that the question
+// never asked for, since grading is exact-match on the JSON shape requested.
 function enforceLogUrl(env, modelText) {
   const trueUrl = realLogUrl(env);
 
   try {
     const parsed = JSON.parse(modelText);
-    if (parsed && typeof parsed === "object") {
+    if (parsed && typeof parsed === "object" && "log_url" in parsed) {
       parsed.log_url = trueUrl;
+      return JSON.stringify(parsed);
+    }
+    // No log_url key in the model's JSON - the question didn't ask for one,
+    // so leave the object exactly as the model produced it.
+    if (parsed && typeof parsed === "object") {
       return JSON.stringify(parsed);
     }
   } catch (e) {
@@ -119,8 +125,7 @@ function enforceLogUrl(env, modelText) {
     return modelText.replace(/"log_url"\s*:\s*"[^"]*"/, `"log_url": "${trueUrl}"`);
   }
 
-  // Last resort: model didn't include log_url at all - return as-is
-  // (this will likely fail grading, but we log it so we can see it happened)
+  // Question didn't mention log_url at all - return as-is
   return modelText;
 }
 
