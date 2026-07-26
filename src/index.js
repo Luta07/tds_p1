@@ -39,7 +39,11 @@ export default {
     try {
       await logEvent(env, { type: "received_message", chat_id: chatId, text: message });
 
-      let answer = await runAgent(env, message);
+      const history = await getChatHistory(env, chatId);
+      history.push(message);
+      await saveChatHistory(env, chatId, history);
+
+      let answer = await runAgent(env, history);
       answer = enforceLogUrl(env, answer);
 
       await sendTelegramMessage(env, chatId, answer);
@@ -62,6 +66,35 @@ export default {
 /* ---------------------------------------------------------------------- */
 function realLogUrl(env) {
   return `https://raw.githubusercontent.com/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/${env.GITHUB_BRANCH || "main"}/${env.GITHUB_LOG_PATH}`;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Chat history (KV) - lets the bot handle multi-turn conversations       */
+/* ---------------------------------------------------------------------- */
+
+const MAX_HISTORY_MESSAGES = 8;
+
+async function getChatHistory(env, chatId) {
+  try {
+    const raw = await env.CHAT_HISTORY.get(`chat:${chatId}`);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (e) {
+    // If KV isn't set up yet, or something's malformed, just start fresh
+    // rather than crashing the whole request.
+    return [];
+  }
+}
+
+async function saveChatHistory(env, chatId, history) {
+  try {
+    const trimmed = history.slice(-MAX_HISTORY_MESSAGES);
+    await env.CHAT_HISTORY.put(`chat:${chatId}`, JSON.stringify(trimmed));
+  } catch (e) {
+    // Don't let a KV write failure break the whole request - worst case we
+    // just lose multi-turn memory for this chat, single-turn still works.
+  }
 }
 
 // The model is unreliable about outputting the correct log_url (it sometimes
@@ -95,30 +128,47 @@ function enforceLogUrl(env, modelText) {
 /* Agent: searches the web (Tavily), then asks Groq to reason over results  */
 /* ---------------------------------------------------------------------- */
 
-async function runAgent(env, userMessage) {
-  // Step 1: search the web ourselves (Tavily free tier)
-  const searchResults = await tavilySearch(env, userMessage);
+async function runAgent(env, chatHistory) {
+  // chatHistory is an array of message strings in order, oldest first.
+  // The LAST message is the one we must answer; earlier ones are context.
+  const lastMessage = chatHistory[chatHistory.length - 1];
+  const priorMessages = chatHistory.slice(0, -1);
+
+  // Step 1: search the web ourselves (Tavily free tier), based on the
+  // question we actually need to answer (the last message)
+  const searchResults = await tavilySearch(env, lastMessage);
 
   const systemPrompt = `You are a data-analysis agent answering questions about
 public datasets (MOSPI and similar Indian government statistics, or general
 public data). Unless the question clearly says otherwise, assume it is asking
 about India specifically (Indian states, Indian government data) - not the
-US or any other country. The user's message will tell you EXACTLY what JSON
-shape to reply with. You have been given real web search results below - use
-them as your source of truth. Rules you must follow:
+US or any other country. This may be a multi-turn conversation: you will be
+given any earlier messages as context, followed by the message you must
+actually answer. Only answer the LAST message; use earlier messages purely
+for context (e.g. clarifying which dataset or topic is meant).
+The last message will tell you EXACTLY what JSON shape to reply with. You
+have been given real web search results below - use them as your source of
+truth. Rules you must follow:
 1. Base your answer on the search results provided. Do not guess or fabricate
    numbers. If the search results are insufficient, use the most plausible
    figure you can find in them and note nothing extra - just answer.
 2. Do the arithmetic/reasoning carefully.
-3. Your FINAL reply must be ONLY the exact JSON object the question asks for.
-   No markdown code fences, no explanation text, no extra keys unless asked.
+3. Your FINAL reply must be ONLY the exact JSON object the LAST message asks
+   for. No markdown code fences, no explanation text, no extra keys unless
+   asked.
 4. For any "log_url" field the question asks for, just put the placeholder
    string "PLACEHOLDER" - it will be replaced automatically, so don't worry
-   about finding a real URL for it.
-5. If the question is a multi-turn conversation, answer only the LAST message,
-   using earlier messages only as context.`;
+   about finding a real URL for it.`;
 
-  const userContent = `Question:\n${userMessage}\n\nWeb search results:\n${searchResults}`;
+  let userContent = "";
+  if (priorMessages.length > 0) {
+    userContent += `Earlier messages in this conversation (context only, do not answer these):\n`;
+    priorMessages.forEach((m, i) => {
+      userContent += `${i + 1}. ${m}\n`;
+    });
+    userContent += `\n`;
+  }
+  userContent += `Message to answer:\n${lastMessage}\n\nWeb search results:\n${searchResults}`;
 
   // Step 2: reason over the search results using Groq (free tier, OpenAI-compatible)
   const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
