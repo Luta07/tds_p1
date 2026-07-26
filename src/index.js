@@ -63,17 +63,26 @@ export default {
 /* ---------------------------------------------------------------------- */
 
 async function runAgent(env, userMessage) {
+  // Step 1: search the web ourselves (Tavily free tier) instead of using
+  // Gemini's built-in "google_search" grounding tool, which requires a paid
+  // Google Cloud billing account even at low volume.
+  const searchResults = await tavilySearch(env, userMessage);
+
   const systemPrompt = `You are a data-analysis agent answering questions about
 public datasets (MOSPI and similar Indian government statistics, or general
 public data). The user's message will tell you EXACTLY what JSON shape to
-reply with. Rules you must follow:
-1. Actually research the answer - use your search tool to find real data.
-   Do not guess or fabricate numbers.
-2. Do the arithmetic/reasoning carefully and show your work internally, but
+reply with. You have been given real web search results below - use them as
+your source of truth. Rules you must follow:
+1. Base your answer on the search results provided. Do not guess or fabricate
+   numbers. If the search results are insufficient, use the most plausible
+   figure you can find in them and note nothing extra - just answer.
+2. Do the arithmetic/reasoning carefully.
 3. Your FINAL reply must be ONLY the exact JSON object the question asks for.
    No markdown code fences, no explanation text, no extra keys unless asked.
 4. If the question is a multi-turn conversation, answer only the LAST message,
    using earlier messages only as context.`;
+
+  const userContent = `Question:\n${userMessage}\n\nWeb search results:\n${searchResults}`;
 
   const res = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${env.GEMINI_API_KEY}`,
@@ -82,8 +91,7 @@ reply with. Rules you must follow:
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         system_instruction: { parts: [{ text: systemPrompt }] },
-        contents: [{ role: "user", parts: [{ text: userMessage }] }],
-        tools: [{ google_search: {} }],
+        contents: [{ role: "user", parts: [{ text: userContent }] }],
         generationConfig: { temperature: 0 },
       }),
     }
@@ -105,6 +113,40 @@ reply with. Rules you must follow:
 
   // Strip accidental markdown fences if the model adds them anyway
   return text.replace(/^```json\s*/i, "").replace(/^```\s*/, "").replace(/```$/, "").trim();
+}
+
+async function tavilySearch(env, query) {
+  try {
+    const res = await fetch("https://api.tavily.com/search", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        api_key: env.TAVILY_API_KEY,
+        query: query,
+        search_depth: "advanced",
+        include_answer: true,
+        max_results: 5,
+      }),
+    });
+
+    if (!res.ok) {
+      const errText = await res.text();
+      return `(search failed: ${res.status} ${errText})`;
+    }
+
+    const data = await res.json();
+
+    let combined = "";
+    if (data.answer) {
+      combined += `Quick answer: ${data.answer}\n\n`;
+    }
+    for (const r of data.results || []) {
+      combined += `Source: ${r.title} (${r.url})\n${r.content}\n\n`;
+    }
+    return combined || "(no search results found)";
+  } catch (err) {
+    return `(search error: ${String(err)})`;
+  }
 }
 
 /* ---------------------------------------------------------------------- */
