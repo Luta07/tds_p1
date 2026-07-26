@@ -54,3 +54,4 @@
 {"type":"final_answer","chat_id":7856700423,"text":"{\"state\":\"Kerala\"}","ts":"2026-07-26T15:10:38.386Z"}
 {"type":"received_message","chat_id":7856700423,"text":"I want data about Indian rivers.","ts":"2026-07-26T15:10:49.979Z"}
 {"type":"final_answer","chat_id":7856700423,"text":"{\"total_length_km\":1900000,\"largest_river\":\"Ganga\",\"log_url\":\"https://raw.githubusercontent.com/Luta07/tds_p1/main/logs/run.jsonl\"}","ts":"2026-07-26T15:10:57.409Z"}
+{"type":"received_message","chat_id":7856700423,"text":"Specifically the Ganga river basin.","ts":"2026-07-26T15:11:05.222Z"}
