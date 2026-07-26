@@ -13,3 +13,4 @@
 {"type":"received_message","chat_id":7856700423,"text":"What is India's population according to the latest Census? Reply with ONLY this JSON object and nothing else: {\"answer\": {\"population\": <number>}, \"log_url\": \"<public wget-able URL to your agent's JSONL log>\"}","ts":"2026-07-26T14:32:17.820Z"}
 {"type":"final_answer","chat_id":7856700423,"text":"{\"answer\":{\"population\":1425775850},\"log_url\":\"https://raw.githubusercontent.com/Luta07/tds_p1/main/logs/run.jsonl\"}","ts":"2026-07-26T14:32:25.759Z"}
 {"type":"received_message","chat_id":7856700423,"text":"I'm asking about Indian agriculture data","ts":"2026-07-26T14:32:47.926Z"}
+{"type":"final_answer","chat_id":7856700423,"text":"{\"GVA_at_current_prices\":{\"2011-12\":1502,\"2023-24\":4878},\"GVO_at_constant_prices\":{\"2011-12\":1908,\"2023-24\":2949},\"log_url\":\"https://raw.githubusercontent.com/Luta07/tds_p1/main/logs/run.jsonl\"}","ts":"2026-07-26T14:32:55.542Z"}
