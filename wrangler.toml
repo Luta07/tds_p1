@@ -6,7 +6,7 @@ compatibility_date = "2024-01-01"
 # Set them with `wrangler secret put <NAME>` - see README.md.
 
 [vars]
-GITHUB_OWNER = "your-github-username"
-GITHUB_REPO = "your-repo-name"
+GITHUB_OWNER = "Luta07"
+GITHUB_REPO = "tds_p1"
 GITHUB_BRANCH = "main"
 GITHUB_LOG_PATH = "logs/run.jsonl"
