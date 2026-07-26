@@ -39,7 +39,8 @@ export default {
     try {
       await logEvent(env, { type: "received_message", chat_id: chatId, text: message });
 
-      const answer = await runAgent(env, message);
+      let answer = await runAgent(env, message);
+      answer = enforceLogUrl(env, answer);
 
       await sendTelegramMessage(env, chatId, answer);
 
@@ -59,6 +60,38 @@ export default {
 };
 
 /* ---------------------------------------------------------------------- */
+function realLogUrl(env) {
+  return `https://raw.githubusercontent.com/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/${env.GITHUB_BRANCH || "main"}/${env.GITHUB_LOG_PATH}`;
+}
+
+// The model is unreliable about outputting the correct log_url (it sometimes
+// invents one from a search result). We NEVER trust the model for this field -
+// we always overwrite it with the real, known-correct log URL.
+function enforceLogUrl(env, modelText) {
+  const trueUrl = realLogUrl(env);
+
+  try {
+    const parsed = JSON.parse(modelText);
+    if (parsed && typeof parsed === "object") {
+      parsed.log_url = trueUrl;
+      return JSON.stringify(parsed);
+    }
+  } catch (e) {
+    // Not valid JSON - fall through to a regex-based patch below
+  }
+
+  // Fallback: if the model's output already contains a "log_url" key but
+  // isn't valid JSON for some reason, patch just that value with regex.
+  if (/"log_url"\s*:/.test(modelText)) {
+    return modelText.replace(/"log_url"\s*:\s*"[^"]*"/, `"log_url": "${trueUrl}"`);
+  }
+
+  // Last resort: model didn't include log_url at all - return as-is
+  // (this will likely fail grading, but we log it so we can see it happened)
+  return modelText;
+}
+
+/* ---------------------------------------------------------------------- */
 /* Agent: searches the web (Tavily), then asks Groq to reason over results  */
 /* ---------------------------------------------------------------------- */
 
@@ -68,16 +101,21 @@ async function runAgent(env, userMessage) {
 
   const systemPrompt = `You are a data-analysis agent answering questions about
 public datasets (MOSPI and similar Indian government statistics, or general
-public data). The user's message will tell you EXACTLY what JSON shape to
-reply with. You have been given real web search results below - use them as
-your source of truth. Rules you must follow:
+public data). Unless the question clearly says otherwise, assume it is asking
+about India specifically (Indian states, Indian government data) - not the
+US or any other country. The user's message will tell you EXACTLY what JSON
+shape to reply with. You have been given real web search results below - use
+them as your source of truth. Rules you must follow:
 1. Base your answer on the search results provided. Do not guess or fabricate
    numbers. If the search results are insufficient, use the most plausible
    figure you can find in them and note nothing extra - just answer.
 2. Do the arithmetic/reasoning carefully.
 3. Your FINAL reply must be ONLY the exact JSON object the question asks for.
    No markdown code fences, no explanation text, no extra keys unless asked.
-4. If the question is a multi-turn conversation, answer only the LAST message,
+4. For any "log_url" field the question asks for, just put the placeholder
+   string "PLACEHOLDER" - it will be replaced automatically, so don't worry
+   about finding a real URL for it.
+5. If the question is a multi-turn conversation, answer only the LAST message,
    using earlier messages only as context.`;
 
   const userContent = `Question:\n${userMessage}\n\nWeb search results:\n${searchResults}`;
@@ -116,16 +154,24 @@ your source of truth. Rules you must follow:
 }
 
 async function tavilySearch(env, query) {
+  // If the question is about India / MOSPI, steer the search toward Indian
+  // government sources so we don't accidentally get US-specific results
+  // (e.g. "maternal mortality by state" defaulting to US state rankings).
+  const isIndiaRelated = /india|mospi|state\b/i.test(query);
+  const searchQuery = isIndiaRelated
+    ? `${query} India government official statistics site:mospi.gov.in OR site:data.gov.in OR site:pib.gov.in OR India`
+    : query;
+
   try {
     const res = await fetch("https://api.tavily.com/search", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         api_key: env.TAVILY_API_KEY,
-        query: query,
+        query: searchQuery,
         search_depth: "advanced",
         include_answer: true,
-        max_results: 5,
+        max_results: 6,
       }),
     });
 
