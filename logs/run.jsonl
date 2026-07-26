@@ -8,3 +8,4 @@
 {"type":"final_answer","chat_id":7856700423,"text":"{\"answer\": {\"state\": \"Louisiana\"}, \"log_url\": \"https://worldpopulationreview.com/state-rankings/maternal-mortality-rate-by-state\"}","ts":"2026-07-26T14:26:27.635Z"}
 {"type":"received_message","chat_id":7856700423,"text":"whic state has the highest population accoriding to indian census","ts":"2026-07-26T14:28:08.029Z"}
 {"type":"final_answer","chat_id":7856700423,"text":"{\"state\": \"Uttar Pradesh\"}","ts":"2026-07-26T14:28:13.007Z"}
+{"type":"received_message","chat_id":7856700423,"text":"Which state has the highest maternal mortality rate based on MOSPI data? Reply with ONLY this JSON object and nothing else: {\"answer\": {\"state\": \"<state name>\"}, \"log_url\": \"<public wget-able URL to your agent's JSONL log>\"}","ts":"2026-07-26T14:31:12.546Z"}
