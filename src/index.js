@@ -5,7 +5,7 @@
  * Flow:
  *  Telegram --webhook POST--> this Worker
  *    -> logs the incoming message to GitHub (logs/run.jsonl)
- *    -> calls Gemini (free tier) with web-search grounding to answer
+ *    -> searches the web (Tavily free tier), then asks Groq (free tier) to answer
  *    -> logs the answer
  *    -> replies on Telegram with the final JSON text
  */
@@ -59,13 +59,11 @@ export default {
 };
 
 /* ---------------------------------------------------------------------- */
-/* Agent: calls Gemini with search grounding to actually research/compute */
+/* Agent: searches the web (Tavily), then asks Groq to reason over results  */
 /* ---------------------------------------------------------------------- */
 
 async function runAgent(env, userMessage) {
-  // Step 1: search the web ourselves (Tavily free tier) instead of using
-  // Gemini's built-in "google_search" grounding tool, which requires a paid
-  // Google Cloud billing account even at low volume.
+  // Step 1: search the web ourselves (Tavily free tier)
   const searchResults = await tavilySearch(env, userMessage);
 
   const systemPrompt = `You are a data-analysis agent answering questions about
@@ -84,31 +82,33 @@ your source of truth. Rules you must follow:
 
   const userContent = `Question:\n${userMessage}\n\nWeb search results:\n${searchResults}`;
 
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${env.GEMINI_API_KEY}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        system_instruction: { parts: [{ text: systemPrompt }] },
-        contents: [{ role: "user", parts: [{ text: userContent }] }],
-        generationConfig: { temperature: 0 },
-      }),
-    }
-  );
+  // Step 2: reason over the search results using Groq (free tier, OpenAI-compatible)
+  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${env.GROQ_API_KEY}`,
+    },
+    body: JSON.stringify({
+      model: "llama-3.3-70b-versatile",
+      temperature: 0,
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userContent },
+      ],
+    }),
+  });
 
   if (!res.ok) {
     const errText = await res.text();
-    throw new Error(`Gemini API error: ${res.status} ${errText}`);
+    throw new Error(`Groq API error: ${res.status} ${errText}`);
   }
 
   const data = await res.json();
-
-  const parts = data.candidates?.[0]?.content?.parts || [];
-  const text = parts.map((p) => p.text || "").join("").trim();
+  const text = data.choices?.[0]?.message?.content?.trim();
 
   if (!text) {
-    throw new Error("Empty response from Gemini: " + JSON.stringify(data));
+    throw new Error("Empty response from Groq: " + JSON.stringify(data));
   }
 
   // Strip accidental markdown fences if the model adds them anyway
