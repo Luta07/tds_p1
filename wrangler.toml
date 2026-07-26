@@ -1,0 +1,12 @@
+name = "tds-data-bot"
+main = "src/index.js"
+compatibility_date = "2024-01-01"
+
+# Secrets (TELEGRAM_TOKEN, GEMINI_API_KEY, GITHUB_TOKEN) are NOT set here.
+# Set them with `wrangler secret put <NAME>` - see README.md.
+
+[vars]
+GITHUB_OWNER = "your-github-username"
+GITHUB_REPO = "your-repo-name"
+GITHUB_BRANCH = "main"
+GITHUB_LOG_PATH = "logs/run.jsonl"
