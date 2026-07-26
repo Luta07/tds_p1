@@ -36,3 +36,4 @@
 {"type":"final_answer","chat_id":7856700423,"text":"{\"answer\":{\"organization\":\"Mothers Against Drunk Driving (MADD)\"},\"log_url\":\"https://raw.githubusercontent.com/Luta07/tds_p1/main/logs/run.jsonl\"}","ts":"2026-07-26T15:06:26.737Z"}
 {"type":"received_message","chat_id":7856700423,"text":"Which Indian state has the lowest per capita income according to MOSPI/government data? Reply with ONLY this JSON: {\"state\": \"<name>\"}","ts":"2026-07-26T15:08:13.871Z"}
 {"type":"final_answer","chat_id":7856700423,"text":"{\"state\":\"Bihar\"}","ts":"2026-07-26T15:08:20.460Z"}
+{"type":"received_message","chat_id":7856700423,"text":"What was India's GDP growth rate for 2023-24 according to MOSPI/government data? Reply with ONLY this JSON: {\"growth_rate_percent\": <number>}","ts":"2026-07-26T15:08:30.966Z"}
