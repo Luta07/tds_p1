@@ -17,3 +17,4 @@
 {"type":"received_message","chat_id":7856700423,"text":"Which state produces the most rice according to government data? Reply with ONLY this JSON object and nothing else: {\"answer\": {\"state\": \"<state name>\"}, \"log_url\": \"<url>\"}","ts":"2026-07-26T14:33:04.688Z"}
 {"type":"final_answer","chat_id":7856700423,"text":"{\"answer\":{\"state\":\"Uttar Pradesh\"},\"log_url\":\"https://raw.githubusercontent.com/Luta07/tds_p1/main/logs/run.jsonl\"}","ts":"2026-07-26T14:33:10.431Z"}
 {"type":"received_message","chat_id":7856700423,"text":"I'm asking about Indian agriculture data.","ts":"2026-07-26T14:39:20.725Z"}
+{"type":"final_answer","chat_id":7856700423,"text":"Please provide the JSON shape you would like me to reply with. I'll answer according to the provided web search results and the specified JSON format.","ts":"2026-07-26T14:39:28.366Z"}
