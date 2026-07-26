@@ -77,3 +77,4 @@
 {"type":"received_message","chat_id":7856700423,"text":"What are the 3 colour of indian flag","ts":"2026-07-26T15:26:49.334Z"}
 {"type":"final_answer","chat_id":7856700423,"text":"{\"colors\":[\"saffron\",\"white\",\"green\"]}","ts":"2026-07-26T15:26:52.891Z"}
 {"type":"received_message","chat_id":7856700423,"text":"what is the fdi ratio of maharashtra in comparsion with the indian country","ts":"2026-07-26T15:28:46.943Z"}
+{"type":"final_answer","chat_id":7856700423,"text":"{\"state\":\"Maharashtra\",\"fdi_ratio\":20}","ts":"2026-07-26T15:28:51.776Z"}
