@@ -131,3 +131,4 @@
 {"type":"received_message","chat_id":7856700423,"text":"thankyou","ts":"2026-07-28T13:33:17.055Z"}
 {"type":"final_answer","chat_id":7856700423,"text":"{\"ID\":\"7\",\"WC\":\"6\",\"Mean%\":\"100\",\"Floor%\":\"100\"}","ts":"2026-07-28T13:33:20.960Z"}
 {"type":"received_message","chat_id":7856700423,"text":"Ladki bahin yojna government of maharashtra estimated cost annually","ts":"2026-07-29T04:56:24.983Z"}
+{"type":"final_answer","chat_id":7856700423,"text":"{\"Ladki Bahin Yojna\":{\"estimated_cost_annually\":\"Not specified\"}}","ts":"2026-07-29T04:56:28.836Z"}
