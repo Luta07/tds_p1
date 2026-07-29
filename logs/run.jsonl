@@ -139,3 +139,4 @@
 {"type":"received_message","chat_id":7856700423,"text":"Maharashtra gdp in lakh crores","ts":"2026-07-29T04:59:23.160Z"}
 {"type":"final_answer","chat_id":7856700423,"text":"{\"maharashtra_gdp\":4267771}","ts":"2026-07-29T04:59:27.030Z"}
 {"type":"received_message","chat_id":7856700423,"text":"In words","ts":"2026-07-29T04:59:32.162Z"}
+{"type":"final_answer","chat_id":7856700423,"text":"\"Sixty billion, seven hundred and twenty million, eight hundred and ninety-nine thousand, nine hundred and ninety-nine rupees\"","ts":"2026-07-29T04:59:35.197Z"}
