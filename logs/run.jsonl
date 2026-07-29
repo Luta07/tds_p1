@@ -153,3 +153,4 @@
 {"type":"received_message","chat_id":7856700423,"text":"Total dependency ratio for india and projected ratio in future","ts":"2026-07-29T05:41:43.525Z"}
 {"type":"final_answer","chat_id":7856700423,"text":"{\"total_dependency_ratio\":62,\"projected_dependency_ratio\":54}","ts":"2026-07-29T05:41:48.337Z"}
 {"type":"received_message","chat_id":7856700423,"text":"Source of the data","ts":"2026-07-29T05:42:03.759Z"}
+{"type":"final_answer","chat_id":7856700423,"text":"{\"source\":\"Government statistics, public datasets, and web search results\"}","ts":"2026-07-29T05:42:07.323Z"}
