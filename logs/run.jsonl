@@ -162,3 +162,4 @@
 {"type":"final_answer","chat_id":7856700423,"text":"{\"answer\":{\"average_sales\":120},\"log_url\":\"https://raw.githubusercontent.com/Luta07/tds_p1/main/logs/run.jsonl\"}","ts":"2026-07-31T04:09:23.302Z"}
 {"type":"received_message","chat_id":7856700423,"text":"Category,Sales\n\nA,100\nA,\nA,200\nB,300\nB,NA\nB,400\n\nIgnore missing values.\n\nFind average sales per category.","ts":"2026-07-31T04:09:38.596Z"}
 {"type":"final_answer","chat_id":7856700423,"text":"{\"answer\":{\"average_sales\":187.5},\"log_url\":\"https://raw.githubusercontent.com/Luta07/tds_p1/main/logs/run.jsonl\"}","ts":"2026-07-31T04:09:43.435Z"}
+{"type":"received_message","chat_id":7856700423,"text":"Employee,Salary\n\nAlice,100\nBob,120\nAlice,100\nAlice,100\nBob,120\nCharlie,140\n\nRemove duplicate rows before computing average salary.","ts":"2026-07-31T04:10:02.740Z"}
