@@ -180,3 +180,4 @@
 {"type":"final_answer","chat_id":7856700423,"text":"{\"average\":0}","ts":"2026-07-31T04:12:15.275Z"}
 {"type":"received_message","chat_id":7856700423,"text":"State,Population,Population2024\n\nA,100,120\nB,90,100\n\nUse Population2024 only.","ts":"2026-07-31T04:12:28.124Z"}
 {"type":"final_answer","chat_id":7856700423,"text":"{\"State\":\"A\",\"Population2024\":120}","ts":"2026-07-31T04:12:31.670Z"}
+{"type":"received_message","chat_id":7856700423,"text":"Numbers\n\n999999999999\n888888888888\n777777777777\n\nFind average.","ts":"2026-07-31T04:12:45.450Z"}
