@@ -171,3 +171,4 @@
 {"type":"received_message","chat_id":7856700423,"text":"Department,Success\n\nA,80%\nA,90%\nB,0.75\nB,75%\n\nFind average success rate.","ts":"2026-07-31T04:10:59.629Z"}
 {"type":"final_answer","chat_id":7856700423,"text":"{\"answer\":{\"average_success_rate\":77.5},\"log_url\":\"https://raw.githubusercontent.com/Luta07/tds_p1/main/logs/run.jsonl\"}","ts":"2026-07-31T04:11:03.499Z"}
 {"type":"received_message","chat_id":7856700423,"text":"Each row contains JSON.\n\n{\"name\":\"A\",\"sales\":10}\n{\"name\":\"B\",\"sales\":20}\n{\"name\":\"C\",\"sales\":30}\n\nFind total sales.","ts":"2026-07-31T04:11:13.956Z"}
+{"type":"final_answer","chat_id":7856700423,"text":"{\"answer\":{\"total_sales\":60},\"log_url\":\"https://raw.githubusercontent.com/Luta07/tds_p1/main/logs/run.jsonl\"}","ts":"2026-07-31T04:11:17.364Z"}
