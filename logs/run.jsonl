@@ -184,3 +184,4 @@
 {"type":"final_answer","chat_id":7856700423,"text":"{\"average\":666666666667}","ts":"2026-07-31T04:12:48.595Z"}
 {"type":"received_message","chat_id":7856700423,"text":"Value\n\n1e3\n2E4\n5e2\n\nSum.","ts":"2026-07-31T04:13:02.360Z"}
 {"type":"final_answer","chat_id":7856700423,"text":"{\"value\":21500}","ts":"2026-07-31T04:13:05.846Z"}
+{"type":"received_message","chat_id":7856700423,"text":"Do NOT explain.\n\nDo NOT use markdown.\n\nDo NOT include code fences.\n\nReply ONLY\n\n{\n\"answer\":{\n\"value\":42\n},\n\"log_url\":\"...\"\n}","ts":"2026-07-31T04:13:20.535Z"}
