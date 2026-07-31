@@ -183,3 +183,4 @@
 {"type":"received_message","chat_id":7856700423,"text":"Numbers\n\n999999999999\n888888888888\n777777777777\n\nFind average.","ts":"2026-07-31T04:12:45.450Z"}
 {"type":"final_answer","chat_id":7856700423,"text":"{\"average\":666666666667}","ts":"2026-07-31T04:12:48.595Z"}
 {"type":"received_message","chat_id":7856700423,"text":"Value\n\n1e3\n2E4\n5e2\n\nSum.","ts":"2026-07-31T04:13:02.360Z"}
+{"type":"final_answer","chat_id":7856700423,"text":"{\"value\":21500}","ts":"2026-07-31T04:13:05.846Z"}
